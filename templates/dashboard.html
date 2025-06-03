@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Painel de Status - Raspberry Pis</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        h1 { color: #333; }
+        .online { color: green; font-weight: bold; }
+        .offline { color: red; font-weight: bold; }
+        table { 
+            border-collapse: collapse; 
+            width: 100%; 
+            margin-top: 20px;
+            box-shadow: 0 2px 3px rgba(0,0,0,0.1);
+        }
+        th { 
+            background-color: #f2f2f2;
+            padding: 12px;
+            text-align: left;
+        }
+        td { 
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+        }
+        tr:hover { background-color: #f5f5f5; }
+        .status-cell { text-align: center; }
+    </style>
+</head>
+<body>
+    <h1>Status dos Raspberry Pis - Monitoramento em Tempo Real</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>Nome</th>
+                <th>Endereço IP</th>
+                <th class="status-cell">Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for pi in pi_status %}
+            <tr>
+                <td>{{ pi.name }}</td>
+                <td>{{ pi.ip }}</td>
+                <td class="status-cell {{ 'online' if pi.status == 'Online' else 'offline' }}">
+                    {{ pi.status }}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>

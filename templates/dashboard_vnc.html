@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Monitoramento VNC - Raspberry Pis</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .container { display: flex; flex-wrap: wrap; gap: 20px; }
+        .pi-card {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 15px;
+            width: 400px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .pi-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .pi-name { font-size: 1.2em; font-weight: bold; }
+        .status {
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 0.9em;
+            color: white;
+        }
+        .online { background-color: #28a745; }
+        .offline { background-color: #dc3545; }
+        .screenshot {
+            width: 100%;
+            border: 1px solid #eee;
+            margin-top: 10px;
+        }
+        .pi-info { font-size: 0.9em; color: #666; margin: 5px 0; }
+        .refresh-btn {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Monitoramento de Raspberry Pis via VNC</h1>
+    
+    <div class="container">
+        {% for pi in pi_status %}
+        <div class="pi-card">
+            <div class="pi-header">
+                <span class="pi-name">{{ pi.name }}</span>
+                <span class="status {{ 'online' if pi.status == 'Online' else 'offline' }}">
+                    {{ pi.status }}
+                </span>
+            </div>
+            
+            <div class="pi-info">IP: {{ pi.ip }}:{{ pi.port }}</div>
+            
+            {% if pi.screenshot %}
+            <img src="{{ pi.screenshot }}" alt="Tela do {{ pi.name }}" class="screenshot" />
+            {% elif pi.status == 'Online' %}
+            <p>Não foi possível obter a tela</p>
+            {% else %}
+            <p>Dispositivo offline</p>
+            {% endif %}
+            
+            <button class="refresh-btn" onclick="refreshScreenshot('{{ pi.ip }}')">
+                Atualizar Tela
+            </button>
+        </div>
+        {% endfor %}
+    </div>
+
+    <script>
+        function refreshScreenshot(ip) {
+            fetch(`/refresh/${ip}`)
+                .then(response => response.json())
+                .then(data => {
+                    if(data.success) {
+                        window.location.reload();
+                    }
+                });
+        }
+        
+        // Atualiza a página a cada 2 minutos
+        setTimeout(() => {
+            window.location.reload();
+        }, 120000);
+    </script>
+</body>
+</html>
